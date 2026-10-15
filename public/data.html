@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Sparepart - Monitoring Sparepart Gudang</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+<div id="app-root"></div>
+
+<template id="layout-header">
+  <header class="topbar">
+    <div class="flex flex-wrap items-center justify-between gap-x-4">
+      <div class="flex items-center gap-3 py-3 min-w-0">
+        <div style="background:var(--accent);color:var(--accent-fg)" class="w-9 h-9 rounded-md flex items-center justify-center font-bold">GPL</div>
+        <div class="min-w-0"><div class="font-bold leading-tight">Monitoring Sparepart Gudang</div><div class="text-xs" style="color:var(--muted)">PT. Gorontalo Panel Lestari · Gudang Mill</div></div>
+      </div>
+      <nav class="flex overflow-x-auto" role="menu" aria-label="Menu">
+        <a class="tab" href="/dashboard" role="menuitem">Dashboard</a>
+        <a class="tab" href="/data" role="menuitem">Data Sparepart</a>
+        <a class="tab" href="/mutasi" role="menuitem">Mutasi</a>
+      </nav>
+      <button class="btn sm" id="btnLogout" title="Keluar">Keluar</button>
+    </div>
+  </header>
+</template>
+
+<template id="layout-login">
+  <div id="login" hidden>
+    <div class="login-wrap"><form id="loginForm" class="card p-6 w-full" style="max-width:380px">
+      <div class="flex items-center gap-3 mb-5"><div style="background:var(--accent);color:var(--accent-fg)" class="w-10 h-10 rounded-md flex items-center justify-center font-bold">GPL</div>
+        <div><div class="font-bold leading-tight">Monitoring Sparepart Gudang</div><div class="text-xs" style="color:var(--muted)">PT. Gorontalo Panel Lestari</div></div></div>
+      <label class="lb" for="lpw">Password</label><input id="lpw" class="field" type="password" autocomplete="current-password" required>
+      <div class="err" id="lerr"></div>
+      <button class="btn pri justify-center w-full mt-4" type="submit">Masuk</button>
+    </form></div>
+  </div>
+  <div id="boot" class="text-sm" style="color:var(--muted);padding:24px">Memuat...</div>
+</template>
+
+<template id="layout-modal-toast">
+  <div id="modal"></div><div id="toastBox"></div>
+</template>
+
+<template id="page-data">
+  <div class="wrap">
+    <div id="header-slot"></div>
+    <main class="py-5 flex flex-col gap-4">
+      <div class="card p-3 flex flex-wrap items-end gap-3">
+        <div class="grow" style="min-width:200px"><label class="lb" for="q">Cari tipe sparepart</label><input id="q" class="field" type="search" placeholder="mis. bearing 6205, V-belt, NYAF"></div>
+        <div style="min-width:170px"><label class="lb" for="fk">Kategori</label><select id="fk" class="field"></select></div>
+        <div style="min-width:140px"><label class="lb" for="fs">Status</label><select id="fs" class="field"><option value="">Semua</option><option value="ORDER">⚠️ ORDER</option><option value="AMAN">AMAN</option></select></div>
+        <button class="btn pri" id="btnAdd">+ Tambah Sparepart</button>
+      </div>
+      <div class="flex flex-wrap items-center justify-between gap-2 text-sm" style="color:var(--muted)"><span id="count"></span><span>Klik judul kolom untuk mengurutkan.</span></div>
+      <div class="card scroll-x" style="max-height:70vh;overflow-y:auto"><table class="tbl">
+        <thead><tr id="thead"></tr></thead><tbody id="tbody"></tbody></table></div>
+      <div class="flex flex-wrap items-center justify-between gap-2"><div class="flex gap-2"><button class="btn sm" id="prev">‹ Sebelumnya</button><button class="btn sm" id="next">Berikutnya ›</button></div><span id="pginfo" class="text-sm" style="color:var(--muted)"></span>
+        <span id="syncinfo" class="text-xs" style="color:var(--muted)"></span></div>
+    </main>
+  </div>
+</template>
+
+<script type="module">
+import { initApp, renderDataTable, showLogin, checkAuth, injectHeader } from '/assets/app.js';
+
+document.getElementById('app-root').innerHTML = `
+  ${document.getElementById('layout-login').innerHTML}
+  <div id="app" hidden>${document.getElementById('page-data').innerHTML}</div>
+  ${document.getElementById('layout-modal-toast').innerHTML}
+`;
+
+await initApp();
+injectHeader('/data');
+
+checkAuth().then(authed => {
+  if (!authed) return showLogin();
+  document.getElementById('boot').hidden = true;
+  document.getElementById('app').hidden = false;
+  renderDataTable();
+});
+</script>
+</body>
+</html>

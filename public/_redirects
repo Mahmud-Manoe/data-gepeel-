@@ -1,0 +1,7 @@
+# Root redirect to dashboard
+/ /dashboard 302
+
+# SPA fallback for direct access (optional - pages serve HTML directly)
+# /dashboard /dashboard.html 200
+# /data /data.html 200
+# /mutasi /mutasi.html 200

@@ -1,0 +1,12 @@
+# Salin file ini menjadi .dev.vars lalu isi. File .dev.vars TIDAK ikut ke git.
+# Dipakai oleh `wrangler pages dev` dan oleh script db:migrate / db:seed.
+
+# Connection string dari Neon (Dashboard Neon > Connect > pilih "Pooled connection")
+DATABASE_URL="postgresql://USER:PASSWORD@ep-xxxx-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
+
+# Password untuk masuk ke aplikasi (ganti!)
+APP_PASSWORD="ganti-dengan-password-kuat"
+
+# Kunci penanda sesi login, acak minimal 32 karakter.
+# Buat dengan:  node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+SESSION_SECRET="ganti-dengan-string-acak-panjang"

@@ -1,0 +1,13 @@
+name = "sparepart-monitoring"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "public"
+
+# Media storage (foto sparepart, dokumen PPB/PR/PO, bukti mutasi)
+# Buat bucket dulu:  npx wrangler r2 bucket create sparepart-media
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "sparepart-media"
+
+# Secret (DATABASE_URL, APP_PASSWORD, SESSION_SECRET) JANGAN ditulis di sini.
+# Lokal : isi file .dev.vars
+# Produksi : npx wrangler pages secret put DATABASE_URL  (atau lewat dashboard Cloudflare)

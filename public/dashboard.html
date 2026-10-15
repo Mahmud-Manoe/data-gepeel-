@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard - Monitoring Sparepart Gudang</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+<div id="app-root"></div>
+
+<!-- Shared layout templates -->
+<template id="layout-header">
+  <header class="topbar">
+    <div class="flex flex-wrap items-center justify-between gap-x-4">
+      <div class="flex items-center gap-3 py-3 min-w-0">
+        <div style="background:var(--accent);color:var(--accent-fg)" class="w-9 h-9 rounded-md flex items-center justify-center font-bold">GPL</div>
+        <div class="min-w-0"><div class="font-bold leading-tight">Monitoring Sparepart Gudang</div><div class="text-xs" style="color:var(--muted)">PT. Gorontalo Panel Lestari · Gudang Mill</div></div>
+      </div>
+      <nav class="flex overflow-x-auto" role="menu" aria-label="Menu">
+        <a class="tab" href="/dashboard" role="menuitem">Dashboard</a>
+        <a class="tab" href="/data" role="menuitem">Data Sparepart</a>
+        <a class="tab" href="/mutasi" role="menuitem">Mutasi</a>
+      </nav>
+      <button class="btn sm" id="btnLogout" title="Keluar">Keluar</button>
+    </div>
+  </header>
+</template>
+
+<template id="layout-login">
+  <div id="login" hidden>
+    <div class="login-wrap"><form id="loginForm" class="card p-6 w-full" style="max-width:380px">
+      <div class="flex items-center gap-3 mb-5"><div style="background:var(--accent);color:var(--accent-fg)" class="w-10 h-10 rounded-md flex items-center justify-center font-bold">GPL</div>
+        <div><div class="font-bold leading-tight">Monitoring Sparepart Gudang</div><div class="text-xs" style="color:var(--muted)">PT. Gorontalo Panel Lestari</div></div></div>
+      <label class="lb" for="lpw">Password</label><input id="lpw" class="field" type="password" autocomplete="current-password" required>
+      <div class="err" id="lerr"></div>
+      <button class="btn pri justify-center w-full mt-4" type="submit">Masuk</button>
+    </form></div>
+  </div>
+  <div id="boot" class="text-sm" style="color:var(--muted);padding:24px">Memuat...</div>
+</template>
+
+<template id="layout-modal-toast">
+  <div id="modal"></div><div id="toastBox"></div>
+</template>
+
+<template id="page-dashboard">
+  <div class="wrap">
+    <div id="header-slot"></div>
+    <main class="py-5 flex flex-col gap-5">
+      <div class="grid gap-3 grid-cols-2 lg:grid-cols-4" id="kpis"></div>
+      <div class="grid gap-5 lg:grid-cols-5">
+        <div class="card p-4 lg:col-span-3 min-w-0">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3"><h2 class="font-bold">Status stok per kategori</h2>
+            <div class="text-xs flex gap-3" style="color:var(--muted)"><span><i class="dot seg-o"></i>ORDER</span><span><i class="dot seg-a"></i>AMAN</span></div></div>
+          <div id="catChart" class="flex flex-col gap-2.5"></div>
+        </div>
+        <div class="card p-4 lg:col-span-2 min-w-0">
+          <h2 class="font-bold mb-3">Proporsi status</h2>
+          <div class="flex items-center gap-5 flex-wrap" id="donutBox"></div>
+          <div class="mt-4 pt-3 text-sm" style="border-top:1px solid var(--line)" id="procBox"></div>
+        </div>
+      </div>
+      <div class="card p-4 min-w-0">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-1"><h2 class="font-bold">Sparepart paling mendesak di-order</h2>
+          <a href="/data?status=ORDER" class="btn sm">Lihat semua yang ORDER</a></div>
+        <p class="text-xs mb-3" style="color:var(--muted)">Diurutkan dari rasio Stok Sekarang terhadap Stok Minimal paling rendah. Stok habis tampil paling atas.</p>
+        <div class="scroll-x"><table class="tbl" style="min-width:760px"><thead><tr><th style="cursor:default">Sparepart</th><th style="cursor:default">Kategori</th><th class="r" style="cursor:default">Stok / Min</th><th style="cursor:default;min-width:140px">Posisi stok</th><th class="r" style="cursor:default">Kurang dari Kebutuhan</th><th style="cursor:default">Dokumen</th></tr></thead><tbody id="urgent"></tbody></table></div>
+      </div>
+    </main>
+  </div>
+</template>
+
+<script type="module">
+import { initApp, renderDashboard, showLogin, checkAuth, injectHeader } from '/assets/app.js';
+
+// Inject shared components
+document.getElementById('app-root').innerHTML = `
+  ${document.getElementById('layout-login').innerHTML}
+  <div id="app" hidden>${document.getElementById('page-dashboard').innerHTML}</div>
+  ${document.getElementById('layout-modal-toast').innerHTML}
+`;
+
+// Initialize
+await initApp();
+injectHeader('/dashboard');
+
+checkAuth().then(authed => {
+  if (!authed) return showLogin();
+  document.getElementById('boot').hidden = true;
+  document.getElementById('app').hidden = false;
+  renderDashboard();
+});
+</script>
+</body>
+</html>
